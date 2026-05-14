@@ -10,6 +10,13 @@ if ($heure < 12) {
 } else {
     $message = "Bonsoir ! Bienvenue sur WebBlog";
 }
+$article = [
+    "Pourquoi PHP en 2026 ? ",
+    "Découvrir Bootstrape en 30 minutes",
+    "Pourquoi Chelsea est la meilleure équipe du monde ?",
+    "Git pour les nuls (pour Zahara)",
+    "One Piece : plus grand manga de tous les temps ?",
+]
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -26,6 +33,17 @@ if ($heure < 12) {
             Nous sommes le <?= $dateActuelle ?>,
             il est <?= $heureActuelle ?>.
         </p>
+        <div class="row">
+            <?php foreach ($article as $titre) : ?>
+                <div class=""col-md-6 mb-3>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><?= $titre ?></h5>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
     </div>
 </body>
 </html>
