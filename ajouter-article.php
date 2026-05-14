@@ -1,4 +1,5 @@
 <?php
+require "config.php";
 require "functions.php";
 
 // On prépare des variables pour conserver les valeurs et les erreurs
@@ -38,8 +39,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Si aucune erreur, c'est validé !
     if (count($erreurs) === 0) {
-        $succes = true;
-    }
+
+    // Récupérer l'id de la catégorie à partir de son nom
+    $stmt = $pdo->prepare("SELECT id FROM categories WHERE nom = ?");
+    $stmt->execute([$categorie]);
+    $categorieId = $stmt->fetchColumn();
+
+    // Générer un extrait automatiquement
+    $extrait = genererExtrait($contenu, 200);
+
+    // INSERT préparé (sécurisé contre les injections SQL)
+    $sql = "INSERT INTO articles (titre, contenu, extrait, auteur_id, categorie_id, tags)
+            VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([
+        $titre,
+        $contenu,
+        $extrait,
+        1,             // auteur_id (Lucas, créé en étape 3.3)
+        $categorieId,
+        $tags
+    ]);
+
+    // Redirection vers la page d'accueil
+    header("Location: index.php");
+    exit;
+}
 }
 ?>
 <!DOCTYPE html>
