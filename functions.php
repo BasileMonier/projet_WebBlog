@@ -28,4 +28,14 @@ function compterMots($texte) {
     $mots = explode(" ", trim($texte));
     return count($mots);
 }
+// Écrire une ligne dans le fichier de logs
+function logAction($action) {
+    // On crée le dossier logs/ s'il n'existe pas
+    if (!is_dir("logs")) {
+        mkdir("logs");
+    }
+    $date = date("Y-m-d H:i:s");
+    $ligne = "[$date] $action\n";
+    file_put_contents("logs/actions.log", $ligne, FILE_APPEND);
+}
 ?>
