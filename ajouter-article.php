@@ -1,5 +1,46 @@
 <?php
 require "functions.php";
+
+// On prépare des variables pour conserver les valeurs et les erreurs
+$erreurs    = [];
+$titre      = "";
+$categorie  = "";
+$contenu    = "";
+$tags       = "";
+$succes     = false;
+
+// On ne valide que si le formulaire a été soumis (en POST)
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+
+    // On récupère et on nettoie chaque champ
+    $titre     = trim($_POST["titre"]);
+    $categorie = trim($_POST["categorie"]);
+    $contenu   = trim($_POST["contenu"]);
+    $tags      = trim($_POST["tags"]);
+
+    // Validation du titre
+    if (strlen($titre) < 5) {
+        $erreurs["titre"] = "Le titre doit faire au moins 5 caractères.";
+    } elseif (strlen($titre) > 200) {
+        $erreurs["titre"] = "Le titre ne doit pas dépasser 200 caractères.";
+    }
+
+    // Validation de la catégorie (on vérifie qu'elle fait partie des choix valides)
+    $categoriesValides = ["Technologie", "Voyage", "Cuisine", "Lifestyle"];
+    if (!in_array($categorie, $categoriesValides)) {
+        $erreurs["categorie"] = "Veuillez choisir une catégorie valide.";
+    }
+
+    // Validation du contenu
+    if (strlen($contenu) < 50) {
+        $erreurs["contenu"] = "Le contenu doit faire au moins 50 caractères.";
+    }
+
+    // Si aucune erreur, c'est validé !
+    if (count($erreurs) === 0) {
+        $succes = true;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -12,11 +53,25 @@ require "functions.php";
     <div class="container mt-5">
         <h1>Ajouter un article</h1>
 
-        <form method="POST" action="ajouter-article.php" class="mt-4">
-            <div class="mb-3">
-                <label class="form-label">Titre</label>
-                <input type="text" name="titre" class="form-control">
-            </div>
+<?php if ($succes) : ?>
+    <div class="alert alert-success mt-4">
+        <h4>✅ Article validé !</h4>
+        <p><strong>Titre :</strong> <?= htmlspecialchars($titre) ?></p>
+        <p><strong>Catégorie :</strong> <?= htmlspecialchars($categorie) ?></p>
+        <p><strong>Extrait :</strong> <?= genererExtrait($contenu, 120) ?></p>
+        <p><?= compterMots($contenu) ?> mots.</p>
+    </div>
+<?php endif; ?>
+
+<form method="POST" action="ajouter-article.php" class="mt-4">
+    <div class="mb-3">
+        <label class="form-label">Titre</label>
+        <input type="text" name="titre" class="form-control"
+               value="<?= htmlspecialchars($titre) ?>">
+        <?php if (isset($erreurs["titre"])) : ?>
+            <div class="text-danger mt-1"><?= $erreurs["titre"] ?></div>
+        <?php endif; ?>
+    </div>
 
             <div class="mb-3">
                 <label class="form-label">Catégorie</label>
@@ -26,17 +81,29 @@ require "functions.php";
                     <option value="Voyage">Voyage</option>
                     <option value="Cuisine">Cuisine</option>
                     <option value="Lifestyle">Lifestyle</option>
-                </select>
+                </select
+                value="<?= htmlspecialchars($categorie) ?>">
+        <?php if (isset($erreurs["categorie"])) : ?>
+            <div class="text-danger mt-1"><?= $erreurs["categorie"] ?></div>
+        <?php endif; ?>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Contenu</label>
-                <textarea name="contenu" class="form-control" rows="6"></textarea>
+                <textarea name="contenu" class="form-control" rows="6"></textarea
+                value="<?= htmlspecialchars($contenu) ?>">
+        <?php if (isset($erreurs["contenu"])) : ?>
+            <div class="text-danger mt-1"><?= $erreurs["contenu"] ?></div>
+        <?php endif; ?>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Tags (séparés par des virgules)</label>
-                <input type="text" name="tags" class="form-control">
+                <input type="text" name="tags" class="form-control"
+                value="<?= htmlspecialchars($contenu) ?>">
+        <?php if (isset($erreurs["contenu"])) : ?>
+            <div class="text-danger mt-1"><?= $erreurs["contenu"] ?></div>
+        <?php endif; ?>
             </div>
 
             <button type="submit" class="btn btn-primary">Publier</button>
