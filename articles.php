@@ -1,7 +1,7 @@
 <?php
 // On importe nos fonctions utilitaires
 require "functions.php";
-
+logAction("Page articles consultée");
 // Tableau multidimensionnel : un tableau d'articles,
 // chaque article étant un tableau associatif
 $articles = [
